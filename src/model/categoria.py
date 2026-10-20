@@ -41,3 +41,22 @@ class Categoria:
         except Exception as e:
             print(f'Erro: {e}')
             return None
+
+    @staticmethod
+    def excluir(id_categoria:int) -> bool:
+        con, cur = Conexao.conectar()
+        if not con:
+            print('Erro ao tentar conectar')
+            return None
+        try:
+            cur.execute("""
+                        delete from tb_categorias
+                        where id_categoria = %s;
+                        """, (id_categoria,))
+            con.commit()
+            con.close()
+            return True
+        
+        except Exception as e:
+            print(f'Erro: {e}')
+            return None
