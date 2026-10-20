@@ -7,11 +7,21 @@ class Usuario:
     @staticmethod
     def cadastrar(login: str, senha: str) -> bool:
         con, cur = Conexao.conectar()
-        con.execute("""
-        INSERT INTO tb_usuarios (usuario, senha) VALUES (%s, %s)
-        """, [login, senha])
 
-        con.commit()
-        con.close()
+        if not con:
+            print("Erro ao tentar conectar!!")
+            return False
 
-        return True 
+        try:
+            cur.execute("""
+            INSERT INTO tb_usuarios (usuario, senha) VALUES (%s, %s)
+            """, [login, senha])
+
+            con.commit()
+            con.close()
+
+            return True 
+        
+        except Exception as e:
+            print(f"ERRO AO INSERIR {e}")
+            return False
