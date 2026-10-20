@@ -10,7 +10,7 @@ class Usuario:
 
         if not con:
             print("Erro ao tentar conectar!!")
-            return False
+            return None
 
         try:
             cur.execute("""
@@ -24,7 +24,7 @@ class Usuario:
         
         except Exception as e:
             print(f"ERRO AO INSERIR {e}")
-            return False
+            return None
 
     @staticmethod
     def verificar(login: str, senha: str) -> dict:
