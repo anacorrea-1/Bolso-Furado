@@ -32,22 +32,18 @@ class Usuario:
         
         if not con:
             print("Erro ao tentar conectar!!")
-            return False
+            return None
         
         try:
             cur.execute(""" 
             SELECT id_usuario,usuario,senha 
             FROM tb_usuarios where usuario 
-            = %s and senha = %s; """[login,senha])
+            = %s and senha = %s; """,[login,senha])
 
-            resu_select = cur.fetchone()
-            resultado = {
-                "login": resu_select[0][1],
-                "senha": resu_select[0][1]
-            }
+            resultado_select = cur.fetchone()
             con.close()
-            return resultado
+            return resultado_select
 
         except Exception as e:
             print (f"Usuario ou Senha errados: {e}")
-            return{}
+            return None
