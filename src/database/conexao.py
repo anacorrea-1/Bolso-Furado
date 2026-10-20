@@ -15,7 +15,7 @@ class Conexao:
                 user="root",
                 password="root",
                 database = "bolso_furado")
-            cursor = conexao.cursor()
+            cursor = conexao.cursor(dictionary = True)
             
             return conexao, cursor
 

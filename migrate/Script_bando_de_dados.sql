@@ -4,7 +4,7 @@ USE bolso_furado;
 
 CREATE TABLE if NOT EXISTS tb_usuarios (
  id_usuario INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
- usuario VARCHAR(30),
+ usuario VARCHAR(30) UNIQUE,
  senha VARCHAR(200)
 );
 
