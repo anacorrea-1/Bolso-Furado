@@ -51,3 +51,29 @@ class Despesa:
         except Exception as e:
                     print(f'Erro: {e}')
                     return None
+
+    @staticmethod
+    def recuperar_por_categoria(id_categoria: int, id_usuario: int) -> list[dict]:
+        con, cur = Conexao.conectar()
+        if not con:
+            print('Erro ao tentar conectar')
+            return None
+
+        try:
+            cur.execute("""
+                        SELECT d.id_despesa, d.id_categoria, c.nome AS categoria,
+                        d.descricao, d.valor, d.data_despesa
+                        FROM tb_despesas d
+                        LEFT JOIN tb_categoria c
+                        ON c.id_categoria = d.id_categoria
+                        AND c.id_usuario = d.id_usuario
+                        WHERE d.id_usuario = %s AND d.id_categoria = %s
+                        ORDER BY d.data_despesa DESC, d.id_despesa DESC;
+                        """, (id_usuario, id_categoria))
+            despesas = cur.fetchall()
+            con.close()
+            return despesas
+
+        except Exception as e:
+            print(f'Erro: {e}')
+            return None
