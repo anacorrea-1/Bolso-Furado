@@ -77,3 +77,21 @@ class Despesa:
         except Exception as e:
             print(f'Erro: {e}')
             return None
+
+    def excluir(id_despesa:int) -> bool:
+            con, cur = Conexao.conectar()
+            if not con:
+                print('Erro ao tentar conectar')
+                return None
+            try:
+                cur.execute("""
+                            delete from tb_despesas
+                            where id_despesa = %s;
+                            """, (id_despesa,))
+                con.commit()
+                con.close()
+                return True
+            
+            except Exception as e:
+                print(f'Erro: {e}')
+                return None
