@@ -95,3 +95,25 @@ class Despesa:
             except Exception as e:
                 print(f'Erro: {e}')
                 return None
+
+    @staticmethod
+    def alterar(id_despesa: int, id_categoria: int, descricao: str, valor: float, data_despesa: str) -> bool:
+        con, cur = Conexao.conectar()
+        if not con:
+            print('Erro ao tentar conectar')
+            return False
+
+        try:
+            cur.execute("""
+                        UPDATE tb_despesas
+                        SET id_categoria = %s, descricao = %s, valor = %s, data_despesa = %s
+                        WHERE id_despesa = %s;
+                        """, (id_categoria, descricao, valor, data_despesa, id_despesa))
+            alterou = cur.rowcount > 0
+            con.commit()
+            con.close()
+            return alterou
+
+        except Exception as e:
+            print(f'Erro: {e}')
+            return False
