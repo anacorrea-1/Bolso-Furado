@@ -9,7 +9,7 @@ CREATE TABLE if NOT EXISTS tb_usuarios (
 );
 
 
-CREATE TABLE if NOT EXISTS tb_categoria (
+CREATE TABLE if NOT EXISTS tb_categorias (
  id_categoria INT NOT NULL AUTO_INCREMENT,
  id_usuario INT NOT NULL,
  nome VARCHAR(40),

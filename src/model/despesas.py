@@ -78,6 +78,7 @@ class Despesa:
             print(f'Erro: {e}')
             return None
 
+    @staticmethod
     def excluir(id_despesa:int) -> bool:
             con, cur = Conexao.conectar()
             if not con:
