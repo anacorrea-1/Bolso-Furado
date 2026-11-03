@@ -13,6 +13,7 @@ def main(page: ft.Page):
     page.bgcolor = COR_FUNDO
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.window.maximized = True
 
     # Campos do formulário
     txt_usuario = ft.TextField(
@@ -41,8 +42,10 @@ def main(page: ft.Page):
         height=140,
     )
 
+    bt_entrar = ft.FilledButton(content="ENTRAR",bgcolor=COR_DESTAQUE,width=300)
+
     campos = ft.Column(
-        controls=[logo_app, txt_usuario, txt_senha],
+        controls=[logo_app, txt_usuario, txt_senha, bt_entrar],
         horizontal_alignment=ft.CrossAxisAlignment.CENTER, 
         spacing=15,
     )
@@ -61,7 +64,7 @@ def main(page: ft.Page):
         )
     )
 
-    page.add(con_base)
+    page.add(con_base,)
     page.update()
 
 ft.run(main)
