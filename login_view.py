@@ -83,10 +83,21 @@ def main(page: ft.Page):
         height=140,
     )
 
+    txt_cadastrar = ft.TextField(
+        value="Cadastrar-se", 
+        text_style=ft.TextStyle(decoration=ft.TextDecoration.UNDERLINE, decoration_color= COR_DESTAQUE),
+        read_only=True, 
+        text_align="center",
+        border_width=0,
+        mouse_cursor=ft.MouseCursor.CLICK, 
+        color=COR_DESTAQUE, 
+        on_click=cadastrar,
+        height=5)
+
     bt_entrar = ft.FilledButton(content="ENTRAR",bgcolor=COR_DESTAQUE,width=300, on_click=verificar)
 
     campos = ft.Column(
-        controls=[logo_app, txt_usuario, txt_senha, bt_entrar],
+        controls=[logo_app, txt_usuario, txt_senha,bt_entrar, txt_cadastrar],
         horizontal_alignment=ft.CrossAxisAlignment.CENTER, 
         spacing=15,
     )
