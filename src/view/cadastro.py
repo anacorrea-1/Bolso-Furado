@@ -94,8 +94,11 @@ class CadastroUsuarioView(ft.View):
             on_click=cadastrar
         )
 
+        self.bt_voltar = ft.IconButton(icon=ft.Icons.ARROW_BACK_IOS, icon_color=self.COR_DESTAQUE)
+        self.linha_voltar = ft.Row(controls=[self.bt_voltar], alignment="TOP_LEFT")
+
         self.campos = ft.Column(
-            controls=[self.logo_app, self.txt_usuario, self.txt_senha, self.bt_entrar],
+            controls=[self.linha_voltar,self.logo_app, self.txt_usuario, self.txt_senha, self.bt_entrar],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER, 
             spacing=15,
         )
