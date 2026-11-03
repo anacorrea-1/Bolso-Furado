@@ -1,11 +1,21 @@
 import flet as ft
+from src.model.usuario import Usuario
 
 # Paleta de Cores "Bolso Furado"
 COR_PRIMARIA = "#004D40"   
 COR_DESTAQUE = "#F9A826"   
 COR_TEXTO = "#263238"      
 COR_FUNDO = "#F1F4F8"      
-COR_CARTAO = "#FAFBFB"     
+COR_CARTAO = "#FAFBFB"
+
+# Status e Feedbacks do Sistema 
+COR_SUCESSO = "#2EA44E"        
+COR_SUCESSO_FUNDO = "#E6F4EA"  
+COR_ERRO = "#E53935"           
+COR_ERRO_FUNDO = "#FCE8E6"     
+COR_ALERTA = "#FB8C00"         
+COR_ALERTA_FUNDO = "#FFF3E0"   
+COR_INFO = "#1E88E5"   
 
 def main(page: ft.Page):
 
@@ -14,6 +24,37 @@ def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.window.maximized = True
+
+    def verificar():
+        verificacao = Usuario.verificar(txt_usuario.value, txt_senha.value)
+        if verificacao:
+            con_base.bgcolor = COR_SUCESSO_FUNDO
+            # Adicione um feedback de sucesso para não quebrar o diálogo abaixo
+            snack = ft.SnackBar(
+                content=ft.Text(value='Login realizado com sucesso!', color=COR_TEXTO),
+                bgcolor=COR_SUCESSO_FUNDO
+            )
+        else:
+            con_base.bgcolor = COR_ERRO_FUNDO
+            txt_usuario.border_color = COR_ERRO
+            txt_senha.border_color = COR_ERRO
+            bt_entrar.color = COR_ERRO
+            snack = ft.SnackBar(
+                content=ft.Text(
+                    value='Login inválido.',
+                    color=COR_TEXTO,
+                    text_align=ft.TextAlign.CENTER,
+                    weight=ft.FontWeight.BOLD
+                ),
+                bgcolor=COR_ERRO_FUNDO,
+                duration=1050
+            )
+            
+        page.show_dialog(snack)
+        page.update()
+            
+    def cadastrar():
+        pass
 
     # Campos do formulário
     txt_usuario = ft.TextField(
@@ -42,7 +83,7 @@ def main(page: ft.Page):
         height=140,
     )
 
-    bt_entrar = ft.FilledButton(content="ENTRAR",bgcolor=COR_DESTAQUE,width=300)
+    bt_entrar = ft.FilledButton(content="ENTRAR",bgcolor=COR_DESTAQUE,width=300, on_click=verificar)
 
     campos = ft.Column(
         controls=[logo_app, txt_usuario, txt_senha, bt_entrar],
