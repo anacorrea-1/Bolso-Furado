@@ -55,8 +55,8 @@ class CadastroUsuarioView(ft.View):
                     duration=1050
                 )
                 
-            self.page.overlay.append(snack)
-            snack.open = True
+            _page.show_dialog(snack)
+            _page.update()
             self.page.update()
 
 

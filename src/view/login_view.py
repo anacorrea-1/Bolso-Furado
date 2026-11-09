@@ -27,7 +27,6 @@ class LoginUsuarioView(ft.View):
         self.vertical_alignment = ft.MainAxisAlignment.CENTER
         self.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
-        
         _page.title = "Bolso Furado"
         _page.window.maximized = True
 
@@ -55,15 +54,13 @@ class LoginUsuarioView(ft.View):
                     duration=1050
                 )
                 
-            self.page.overlay.append(snack)
-            snack.open = True
+            _page.show_dialog(snack)
+            _page.update()
             self.page.update()
                 
         def cadastrar(e):
-            # Exemplo de navegação para a rota de cadastro
             self.page.go("/cadastro")
 
-        
         self.txt_usuario = ft.TextField(
             label="Usuário / LOGIN",
             width=320,
@@ -92,7 +89,7 @@ class LoginUsuarioView(ft.View):
 
         
         self.txt_cadastrar = ft.TextButton(
-            text="Cadastrar-se",
+            content=ft.Text("Cadastrar-se"),
             style=ft.ButtonStyle(
                 color=self.COR_DESTAQUE,
                 overlay_color=ft.Colors.TRANSPARENT,
@@ -100,7 +97,6 @@ class LoginUsuarioView(ft.View):
             on_click=cadastrar
         )
 
-        
         self.bt_entrar = ft.FilledButton(
             content=ft.Text("ENTRAR"),
             bgcolor=self.COR_DESTAQUE,
@@ -128,5 +124,4 @@ class LoginUsuarioView(ft.View):
             )
         )
 
-        
         self.controls = [self.con_base]
