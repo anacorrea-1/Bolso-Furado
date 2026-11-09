@@ -58,8 +58,8 @@ class LoginUsuarioView(ft.View):
             _page.update()
             self.page.update()
                 
-        def cadastrar(e):
-            self.page.navigate("/cadastro")
+        async def cadastrar(self):
+            await self.page.push_route("/cadastro")
 
         self.txt_usuario = ft.TextField(
             label="Usuário / LOGIN",

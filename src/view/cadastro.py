@@ -59,8 +59,8 @@ class CadastroUsuarioView(ft.View):
             _page.update()
             self.page.update()
 
-        def login(e):
-            self.page.navigate("/login")
+        async def login(self):
+            await self.page.push_route("/login")
 
 
         self.txt_usuario = ft.TextField(
