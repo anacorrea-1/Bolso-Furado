@@ -59,7 +59,7 @@ class LoginUsuarioView(ft.View):
             self.page.update()
                 
         def cadastrar(e):
-            self.page.go("/cadastro")
+            self.page.navigate("/cadastro")
 
         self.txt_usuario = ft.TextField(
             label="Usuário / LOGIN",

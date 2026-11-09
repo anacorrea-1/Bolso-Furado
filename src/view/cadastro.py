@@ -59,6 +59,9 @@ class CadastroUsuarioView(ft.View):
             _page.update()
             self.page.update()
 
+        def login(e):
+            self.page.navigate("/login")
+
 
         self.txt_usuario = ft.TextField(
             label="Usuário | LOGIN",
@@ -94,7 +97,7 @@ class CadastroUsuarioView(ft.View):
             on_click=cadastrar
         )
 
-        self.bt_voltar = ft.IconButton(icon=ft.Icons.ARROW_BACK_IOS, icon_color=self.COR_DESTAQUE)
+        self.bt_voltar = ft.IconButton(icon=ft.Icons.ARROW_BACK_IOS, icon_color=self.COR_DESTAQUE,on_click=login)
         self.linha_voltar = ft.Row(controls=[self.bt_voltar], alignment="TOP_LEFT")
 
         self.campos = ft.Column(
