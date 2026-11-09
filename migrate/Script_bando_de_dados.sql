@@ -31,7 +31,7 @@ CREATE TABLE if NOT EXISTS tb_despesas (
  PRIMARY KEY (id_despesa,id_usuario),
 
  FOREIGN KEY (id_usuario) REFERENCES tb_usuarios (id_usuario),
- FOREIGN KEY (id_categoria,id_usuario) REFERENCES tb_categoria (id_categoria,id_usuario)
+ FOREIGN KEY (id_categoria,id_usuario) REFERENCES tb_categorias (id_categoria,id_usuario)
 );
 
 
