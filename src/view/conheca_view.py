@@ -21,8 +21,29 @@ class ConhecaOAPP(ft.View):
         _page.title = "Bolso Furado - Conheça o App"
         _page.window.maximized = True
 
-        # Definição da NavigationBar (Menu Inferior Horizontal)
+        async def teste(e=None):
+                indice_clicado = e.control.selected_index
+
+                if indice_clicado == 0:
+                    await self.page.push_route("/conheca")
+
+                elif indice_clicado == 1:
+                    await self.page.push_route("")
+
+                elif indice_clicado == 2:
+                    await self.page.push_route("")
+
+                elif indice_clicado == 3:
+                    await self.page.push_route("")
+
+                elif indice_clicado == 4:
+                    await self.page.push_route("")
+
+
+
+        # Definição da NavigationBar
         self.navigation_bar = ft.NavigationBar(
+            on_change= teste,
             selected_index=0,
             bgcolor=self.COR_CARTAO,
             destinations=[
@@ -32,25 +53,25 @@ class ConhecaOAPP(ft.View):
                     label="Início",
                 ),
                 ft.NavigationBarDestination(
-                    icon=ft.Icons.CATEGORY_OUTLINED,
-                    selected_icon=ft.Icons.CATEGORY,
+                    icon=ft.Icons.ASSIGNMENT_ADD,
+                    selected_icon=ft.Icons.ASSIGNMENT_ADD,
                     label="Cadastrar por categorias",
                 ),
                 ft.NavigationBarDestination(
                     icon=ft.Icons.ADD_SHOPPING_CART_OUTLINED,
-                    selected_icon=ft.Icons.ADD_SHOPPING_CART,
+                    selected_icon=ft.Icons.ADD_SHOPPING_CART_OUTLINED,
                     label="Cadastrar despesa",
                 ),
 
                 ft.NavigationBarDestination(
-                    icon=ft.Icons.ADD_SHOPPING_CART_OUTLINED,
-                    selected_icon=ft.Icons.ADD_SHOPPING_CART,
+                    icon=ft.Icons.SHOPPING_BAG,
+                    selected_icon=ft.Icons.SHOPPING_BAG,
                     label="Todas as despesas",
                 ),
 
                 ft.NavigationBarDestination(
-                    icon=ft.Icons.CATEGORY_OUTLINED,
-                    selected_icon=ft.Icons.CATEGORY,
+                    icon=ft.Icons.SHOPPING_CART_CHECKOUT,
+                    selected_icon=ft.Icons.SHOPPING_CART_CHECKOUT,
                     label="Despesas por categorias",
                 ),
 
@@ -61,7 +82,13 @@ class ConhecaOAPP(ft.View):
             ],
         )
 
-        # Banner de Título Superior (Formato Pílula Compacto)
+        self.logo_app = ft.Image(
+            src="src/view/img/logo.png",
+            width=180,
+            height=140,
+            )
+
+        # Banner de Título Superior 
         self.banner_titulo = ft.Container(
             content=ft.Row(
                 controls=[
@@ -87,12 +114,12 @@ class ConhecaOAPP(ft.View):
             max_width=520,
         )
 
-        # Cartão Principal de História (Expandido, sem botão no rodapé)
+        # Cartão Principal de História 
         self.cartao_historia = ft.Container(
             content=ft.Column(
                 controls=[
                     ft.Container(
-                        content=ft.Icon(ft.Icons.ACCOUNT_BALANCE_WALLET_ROUNDED, size=44, color=self.COR_DESTAQUE),
+                        content=self.logo_app,
                         bgcolor="#FFF8E1",
                         padding=16,
                         border_radius=50,
@@ -165,5 +192,5 @@ class ConhecaOAPP(ft.View):
             expand=True,
         )
 
-        # Adiciona apenas o painel central (menu gerenciado via self.navigation_bar)
+        # Adiciona apenas o painel central 
         self.controls = [self.conteudo_principal]
