@@ -30,7 +30,7 @@ class LoginUsuarioView(ft.View):
         _page.title = "Bolso Furado"
         _page.window.maximized = True
 
-        def verificar(e):
+        async def verificar(e):
             verificacao = Usuario.verificar(self.txt_usuario.value, self.txt_senha.value)
             if verificacao:
                 self.con_base.bgcolor = self.COR_SUCESSO_FUNDO
@@ -38,6 +38,8 @@ class LoginUsuarioView(ft.View):
                     content=ft.Text(value='Login realizado com sucesso!', color=self.COR_TEXTO),
                     bgcolor=self.COR_SUCESSO_FUNDO
                 )
+                _page.session.store.set("usuario_logado",verificacao)
+                await conheca()
             else:
                 self.con_base.bgcolor = self.COR_ERRO_FUNDO
                 self.txt_usuario.border_color = self.COR_ERRO
@@ -60,6 +62,9 @@ class LoginUsuarioView(ft.View):
                 
         async def cadastrar(self):
             await self.page.push_route("/cadastro")
+
+        async def conheca():
+            await _page.push_route("/conheca")
 
         self.txt_usuario = ft.TextField(
             label="Usuário / LOGIN",
