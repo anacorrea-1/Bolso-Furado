@@ -18,6 +18,7 @@ def main(page:ft.Page):
         indice_clicado = e.control.selected_index
 
         if indice_clicado == 0:
+            tela_login_usuario = LoginUsuarioView(page)
             await page.push_route("/conheca")
 
         elif indice_clicado == 1:
@@ -76,28 +77,28 @@ def main(page:ft.Page):
         ],
     )
 
-    tela_login_usuario = LoginUsuarioView(page)
-    tela_cadastro_usuario = CadastroUsuarioView(page)
-    tela_conheca = ConhecaOAPP(page)
-    tela_conheca.navigation_bar = navigation_bar
 
     def route(e = None):
         page.views.clear()
 
         if page.route == "/cadastro":
-            page.views.append (tela_cadastro_usuario)
+            tela_cadastro_usuario = CadastroUsuarioView(page)
+            page.views.append(tela_cadastro_usuario)
             
         elif page.route == "/login":
-            page.views.append (tela_login_usuario)
+            tela_login_usuario = LoginUsuarioView(page)
+            page.views.append(tela_login_usuario)
 
         elif page.route == "/conheca":
-            page.views.append (tela_conheca)
+            tela_conheca = ConhecaOAPP(page)
+            tela_conheca.navigation_bar = navigation_bar
+            page.views.append(tela_conheca)
         
         page.update()
 
     page.on_route_change = route
     route()
 
-    page.views.append (tela_login_usuario)
+    page.navigate ("/login")
 
 ft.run(main)

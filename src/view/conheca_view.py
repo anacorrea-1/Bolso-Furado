@@ -18,6 +18,9 @@ class ConhecaOAPP(ft.View):
         self.bgcolor = self.COR_FUNDO
         self.padding = 0
 
+        dados_usuario = _page.session.store.get("usuario_logado")
+        nome_usuario = dados_usuario.get("usuario")
+
         # Configurações globais da janela
         _page.title = "Bolso Furado - Conheça o App"
         _page.window.maximized = True
@@ -59,7 +62,7 @@ class ConhecaOAPP(ft.View):
             content=ft.Row(
                 controls=[
                     ft.Text(
-                        "Seja Bem-Vindo 'Fulano'!!",
+                        value=f"Seja Bem-Vindo, {nome_usuario}!!",
                         size=16,
                         weight=ft.FontWeight.BOLD,
                         color=self.COR_PRIMARIA,
@@ -143,9 +146,10 @@ class ConhecaOAPP(ft.View):
         # Painel Principal de Conteúdo
 
         # Botão de instruções
-        self.botao_instrucoes = ft.TextButton(
-            "Como usar o aplicativo?",
+        self.botao_instrucoes = ft.FilledTonalButton(
+            content="Como usar o aplicativo?",
             on_click=self.abrir_popup,
+            bgcolor=self.COR_DESTAQUE
         )
 
         self.conteudo_principal = ft.Container(

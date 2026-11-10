@@ -38,6 +38,7 @@ class LoginUsuarioView(ft.View):
                     content=ft.Text(value='Login realizado com sucesso!', color=self.COR_TEXTO),
                     bgcolor=self.COR_SUCESSO_FUNDO
                 )
+                _page.session.store.set("usuario_logado",verificacao)
                 await conheca()
             else:
                 self.con_base.bgcolor = self.COR_ERRO_FUNDO
