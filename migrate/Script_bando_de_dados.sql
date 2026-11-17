@@ -24,7 +24,7 @@ CREATE TABLE if NOT EXISTS tb_despesas (
  id_despesa INT NOT NULL AUTO_INCREMENT,
  id_usuario INT NOT NULL,
  valor DECIMAL(30,2),
- data_despesa DATE,
+ data_despesa DATETIME,
  descricao VARCHAR(100),
  id_categoria INT,
 
