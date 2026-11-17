@@ -16,8 +16,10 @@ class CadastroDespesaView(ft.View):
         self.COR_FUNDO = "#F1F4F8"
         self.COR_CARTAO = "#FAFBFB"
 
-        self.COR_SUCESSO = "#2EA44E"
-        self.COR_ERRO = "#E53935"
+        self.COR_SUCESSO = "#2EA44E"        
+        self.COR_SUCESSO_FUNDO = "#E6F4EA"  
+        self.COR_ERRO = "#E53935"           
+        self.COR_ERRO_FUNDO = "#FCE8E6"
 
         # Configurações da View
         self.route = "/caddesp"
@@ -143,7 +145,7 @@ class CadastroDespesaView(ft.View):
             style=ft.ButtonStyle(
                 shape=ft.RoundedRectangleBorder(radius=20)
             ),
-            on_click=self.add_despesa()
+            on_click=self.add_despesa
         )
 
         # Organização dos elementos
@@ -184,12 +186,40 @@ class CadastroDespesaView(ft.View):
         valor = self.txt_valor.value
         if valor and valor.find(','):
             valor = valor.replace(',',".")
-            valor = float(valor)
+            try:
+                valor = float(valor)
+            except:
+                valor = None
         data = self.txt_data.value
         dia, mes, ano = data.split('/')
         data = ano + "-" + mes + "-" + dia
         id_cat = self.dd_categoria.value
-        print(descricao, valor, data, id_cat)
         if descricao and valor and data and id_cat:
-            print(Despesa.incluir(id_usuario=self.id_u, descricao=descricao, valor=valor, data_despesa=data, id_categoria=id_cat))
+            if Despesa.incluir(id_usuario=self.id_u, descricao=descricao, valor=valor, data_despesa=data, id_categoria=id_cat):
+               snack = ft.SnackBar(content=ft.Text(value='Despesa Adicionada!',
+                                                    color=self.COR_SUCESSO,
+                                                    text_align= ft.TextAlign.CENTER,
+                                                    weight=ft.FontWeight.BOLD),
+                                    bgcolor=self.COR_SUCESSO_FUNDO,
+                                    
+                                    duration=1050,
+                                    )
+            else:
+                snack = ft.SnackBar(content=ft.Text(value='Houve um erro, tente novamente.',
+                                                    color=self.COR_ERRO,
+                                                    text_align= ft.TextAlign.CENTER,
+                                                    weight=ft.FontWeight.BOLD),
+                                    bgcolor=self.COR_ERRO_FUNDO,
+                                    duration=1050,
+                                    )
+        else:
+            snack = ft.SnackBar(content=ft.Text(value='Preencha todos os campos e selecione uma categoria.',
+                                                color=self.COR_ERRO,
+                                                text_align= ft.TextAlign.CENTER,
+                                                weight=ft.FontWeight.BOLD),
+                                bgcolor=self.COR_ERRO_FUNDO,
+                                duration=1050,
+                                )
+                
+        self.page_ref.show_dialog(snack)
 
