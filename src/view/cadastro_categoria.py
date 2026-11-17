@@ -28,6 +28,9 @@ class CadastroCategoriaoView(ft.View):
         id_usuario = _page.session.store.get("usuario_logado")
         self.id_u = id_usuario.get("id_usuario")
 
+        self.categorias = []
+        self.cats()
+
         # Logo
         self.logo_app = ft.Image(
             src="src/view/img/mascote.png",
@@ -88,18 +91,13 @@ class CadastroCategoriaoView(ft.View):
             color=self.COR_TEXTO,
         )
 
-        # Lista de categorias
         self.lista_categorias = ft.Column(
-            controls=[
-                ft.Text(
-                    "Suas categorias aparecerão aqui.",
-                    color="#888888",
-                    size=14,
-                )
-            ],
+            controls=self.categorias,
             spacing=10,
             scroll=ft.ScrollMode.AUTO,
+            expand=True,
         )
+
 
         # Organização dos elementos
         self.campos = ft.Column(
@@ -135,11 +133,42 @@ class CadastroCategoriaoView(ft.View):
 
         self.controls = [self.con_base]
 
-    def add_cat(self):
-        txt_cat = self.txt_usuario.value
-        if len(txt_cat)> 0:
+    def add_cat(self, e):  
+        txt_cat = self.txt_usuario.value.strip()
+    
+        if len(txt_cat) > 0:
             self.txt_usuario.value = ''
-            Categoria.adicionar(txt_cat,self.id_u)
-        else:
-            pass
+            resultado = Categoria.adicionar(categoria=txt_cat, id_usuario=self.id_u)
+            self.cats()
 
+    def cats(self):
+        lista = Categoria.recuperar_todos(id_usuario=self.id_u)
+        self.categorias.clear()
+        
+        if len(lista) > 0:
+            for i in lista:
+                id_cat = i['id_categoria']
+                a = i['nome']
+                b = ft.Container(
+                    content=ft.Row(
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        controls=[
+                            ft.TextField(value=a, color=self.COR_TEXTO, expand=True),
+                            ft.Row( 
+                                controls=[
+                                    ft.FilledButton(icon=ft.Icons.DELETE,icon_color="white",bgcolor=self.COR_ERRO,on_click=lambda:self.del_cat(id_cat),key=id_cat),
+                                ]
+                            )
+                        ]
+                    )
+                )
+                self.categorias.insert(0, b)
+        else:
+            self.categorias.append(
+                ft.Text('Você não possui nenhuma categoria registrada.', color=self.COR_TEXTO)
+            )
+    def del_cat(self, cat_id):
+        Categoria.excluir(id_categoria=cat_id)
+        
+        self.cats()
+    

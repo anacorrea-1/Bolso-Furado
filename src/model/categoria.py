@@ -31,7 +31,7 @@ class Categoria:
             return None
         try:
             cur.execute("""
-                        SELECT nome from tb_categorias
+                        SELECT nome, id_categoria from tb_categorias
                         where id_usuario = %s;
                         """, (id_usuario,))
             categorias = cur.fetchall()
