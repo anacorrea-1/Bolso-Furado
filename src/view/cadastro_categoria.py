@@ -156,7 +156,7 @@ class CadastroCategoriaoView(ft.View):
                             ft.TextField(value=a, color=self.COR_TEXTO, expand=True),
                             ft.Row( 
                                 controls=[
-                                    ft.FilledButton(icon=ft.Icons.DELETE,icon_color="white",bgcolor=self.COR_ERRO,on_click=lambda:self.del_cat(id_cat),key=id_cat),
+                                    ft.FilledButton(icon=ft.Icons.DELETE,icon_color="white",bgcolor=self.COR_ERRO,on_click=self.del_cat,key=id_cat),
                                 ]
                             )
                         ]
@@ -167,7 +167,8 @@ class CadastroCategoriaoView(ft.View):
             self.categorias.append(
                 ft.Text('Você não possui nenhuma categoria registrada.', color=self.COR_TEXTO)
             )
-    def del_cat(self, cat_id):
+    def del_cat(self, e):
+        cat_id = e.control.key
         Categoria.excluir(id_categoria=cat_id)
         
         self.cats()
