@@ -3,6 +3,7 @@ import flet as ft
 from src.view.login_view import LoginUsuarioView
 from src.view.cadastro import CadastroUsuarioView
 from src.view.conheca_view import ConhecaOAPP
+from src.view.cadastro_categoria import CadastroCategoriaoView
 
 # Paleta de Cores "Bolso Furado" 
 COR_PRIMARIA = "#004D40"   
@@ -22,7 +23,8 @@ def main(page:ft.Page):
             await page.push_route("/conheca")
 
         elif indice_clicado == 1:
-            await page.push_route("")
+            tela_cadastro_categoria = CadastroCategoriaoView(page)
+            await page.push_route("/cadcate")
 
         elif indice_clicado == 2:
             await page.push_route("")
@@ -89,11 +91,17 @@ def main(page:ft.Page):
             tela_login_usuario = LoginUsuarioView(page)
             page.views.append(tela_login_usuario)
 
+
         elif page.route == "/conheca":
-            tela_conheca = ConhecaOAPP(page)
-            tela_conheca.navigation_bar = navigation_bar
-            page.views.append(tela_conheca)
+                tela_conheca = ConhecaOAPP(page)
+                tela_conheca.navigation_bar = navigation_bar
+                page.views.append(tela_conheca)
         
+        elif page.route == "/cadcate":
+            tela_cadastro_categoria = CadastroCategoriaoView(page)
+            tela_cadastro_categoria.navigation_bar = navigation_bar
+            page.views.append(tela_cadastro_categoria)
+            
         page.update()
 
     page.on_route_change = route
