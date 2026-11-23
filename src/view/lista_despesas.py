@@ -37,26 +37,21 @@ class TodasDespesasView(ft.View):
             height=100,
         )
 
-        # Título
-        self.titulo = ft.Text(
-            "Todas as despesas",
-            size=28,
-            weight=ft.FontWeight.BOLD,
-            color=self.COR_PRIMARIA,
-        )
-
-        self.subtitulo = ft.Text(
-            "Acompanhe e organize seus gastos!",
-            size=15,
-            color=self.COR_TEXTO,
-        )
-
         # Título da lista
         self.titulo_lista = ft.Text(
             "Despesas cadastradas",
-            size=18,
+            size=28,
             weight=ft.FontWeight.BOLD,
             color=self.COR_TEXTO,
+        )
+
+        # Resumo do total de gastos
+        self.txt_total = ft.Text(
+            "Total de gastos: R$ 0,00",
+            size=16,
+            weight=ft.FontWeight.BOLD,
+            color=self.COR_DESTAQUE,
+            visible=False,
         )
 
         # Lista de despesas
@@ -70,9 +65,10 @@ class TodasDespesasView(ft.View):
         self.campos = ft.Column(
             controls=[
                 self.logo_app,
-                self.titulo,
-                self.subtitulo,
                 self.titulo_lista,
+                ft.Divider(color="#ECEFF1", height=20),
+                self.txt_total,
+                ft.Divider(color="#ECEFF1", height=20),
                 self.lista,
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -100,6 +96,10 @@ class TodasDespesasView(ft.View):
 
         # Carrega os dados assim que a tela é montada
         self.carregar_dados(atualizar_tela=False)
+
+
+    def moeda(self, valor):
+        return f"R$ {float(valor):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
     def carregar_dados(self, atualizar_tela=True):
         usuario = self.page_ref.session.store.get("usuario_logado")
@@ -136,72 +136,58 @@ class TodasDespesasView(ft.View):
             print(f"Erro ao buscar despesas: {e}")
             self.despesas = []
 
-    # Criar lista de despesas
-    def atualizar_lista(self, despesas, atualizar_tela=True):
+    # Criar lista de despesas 
+    def atualizar_lista(self, despesas=None, atualizar_tela=True):
+        if despesas is None:
+            despesas = self.despesas
+
         self.lista.controls.clear()
+        self.txt_total.visible = bool(despesas)
 
-        if len(despesas) > 0:
+        if not despesas:
+            self.lista.controls.append(
+                ft.Text("Você não possui nenhuma despesa registrada.", color=self.COR_TEXTO)
+            )
+        else:
+            total = sum(float(d["valor"]) for d in despesas)
+            self.txt_total.value = f"Total de gastos: {self.moeda(total)}"
+
             for d in despesas:
-                data = d["data_despesa"]
-
-                if hasattr(data, "strftime"):
-                    data = data.strftime("%d/%m/%Y")
-                else:
-                    data = str(data)
-
-                valor = float(d["valor"])
-                categoria = d.get("categoria") or (
+                data = (
+                    d["data_despesa"].strftime("%d/%m/%Y")
+                    if hasattr(d["data_despesa"], "strftime")
+                    else str(d["data_despesa"])
+                )
+                cat = d.get("categoria") or (
                     f"Categoria #{d['id_categoria']}" if d.get("id_categoria") else "Sem categoria"
                 )
 
-                linha = ft.Container(
-                    content=ft.Row(
-                        controls=[
-                            ft.Column(
-                                controls=[
-                                    ft.Text(
-                                        d["descricao"],
-                                        color=self.COR_TEXTO,
-                                        weight=ft.FontWeight.BOLD,
-                                    ),
-                                    ft.Text(
-                                        f"{categoria} • {data}",
-                                        color="#647078",
-                                        size=12,
-                                    ),
-                                ],
-                                spacing=5,
-                                expand=True,
-                            ),
-                            ft.Text(
-                                f"R$ {valor:,.2f}".replace(
-                                    ",", "X"
-                                ).replace(".", ",").replace("X", "."),
-                                color=self.COR_ERRO,
-                                weight=ft.FontWeight.BOLD,
-                            ),
-                            ft.IconButton(
-                                icon=ft.Icons.DELETE_OUTLINE,
-                                icon_color=self.COR_ERRO,
-                                on_click=lambda e, id=d["id_despesa"]: self.del_despesa(id),
-                            ),
-                        ],
-                    ),
-                    padding=15,
-                    bgcolor="white",
-                    border_radius=12,
-                    border=ft.Border.all(1, "#E5E8EA"),
+                self.lista.controls.append(
+                    ft.Container(
+                        padding=15,
+                        bgcolor="white",
+                        border_radius=12,
+                        border=ft.Border.all(1, "#E5E8EA"),
+                        content=ft.Row(
+                            controls=[
+                                ft.Column(
+                                    spacing=5,
+                                    expand=True,
+                                    controls=[
+                                        ft.Text(d["descricao"], color=self.COR_TEXTO, weight=ft.FontWeight.BOLD),
+                                        ft.Text(f"{cat} • {data}", color="#647078", size=12),
+                                    ],
+                                ),
+                                ft.Text(self.moeda(d["valor"]), color=self.COR_ERRO, weight=ft.FontWeight.BOLD),
+                                ft.IconButton(
+                                    icon=ft.Icons.DELETE_OUTLINE,
+                                    icon_color=self.COR_ERRO,
+                                    on_click=lambda e, id_d=d["id_despesa"]: self.del_despesa(id_d),
+                                ),
+                            ]
+                        ),
+                    )
                 )
-
-                self.lista.controls.append(linha)
-
-        else:
-            self.lista.controls.append(
-                ft.Text(
-                    "Você não possui nenhuma despesa registrada.",
-                    color=self.COR_TEXTO,
-                )
-            )
 
         if atualizar_tela:
             self.update()
