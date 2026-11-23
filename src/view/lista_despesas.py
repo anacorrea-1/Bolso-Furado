@@ -1,6 +1,5 @@
-
 import flet as ft
-from src.model.despesas import Despesa
+from src.database.conexao import Conexao
 
 
 class TodasDespesasView(ft.View):
@@ -28,14 +27,8 @@ class TodasDespesasView(ft.View):
         page.window.maximized = True
 
         self.page_ref = page
-
-        # Usuário logado
-        usuario = page.session.store.get("usuario_logado")
-        self.id_u = usuario.get("id_usuario")
-
-        # Recuperar despesas
+        self.id_u = None
         self.despesas = []
-        self.recuperar_despesas()
 
         # Logo
         self.logo_app = ft.Image(
@@ -58,39 +51,6 @@ class TodasDespesasView(ft.View):
             color=self.COR_TEXTO,
         )
 
-        # Total gasto
-        self.total = ft.Text(
-            "",
-            size=25,
-            weight=ft.FontWeight.BOLD,
-            color=self.COR_ERRO,
-        )
-
-        self.quantidade = ft.Text(
-            "",
-            size=13,
-            color=self.COR_TEXTO,
-        )
-
-        # Cartão de resumo
-        self.cartao_total = ft.Container(
-            content=ft.Column(
-                controls=[
-                    ft.Text(
-                        "Total de despesas",
-                        color=self.COR_TEXTO,
-                    ),
-                    self.total,
-                    self.quantidade,
-                ],
-                spacing=5,
-            ),
-            padding=18,
-            bgcolor=self.COR_ERRO_FUNDO,
-            border_radius=12,
-            width=550,
-        )
-
         # Título da lista
         self.titulo_lista = ft.Text(
             "Despesas cadastradas",
@@ -106,16 +66,12 @@ class TodasDespesasView(ft.View):
             expand=True,
         )
 
-        self.atualizar_total()
-        self.atualizar_lista(self.despesas)
-
         # Organização dos elementos
         self.campos = ft.Column(
             controls=[
                 self.logo_app,
                 self.titulo,
                 self.subtitulo,
-                self.cartao_total,
                 self.titulo_lista,
                 self.lista,
             ],
@@ -142,35 +98,50 @@ class TodasDespesasView(ft.View):
 
         self.controls = [self.con_base]
 
-    # Recuperar despesas do banco
+        # Carrega os dados assim que a tela é montada
+        self.carregar_dados(atualizar_tela=False)
+
+    def carregar_dados(self, atualizar_tela=True):
+        usuario = self.page_ref.session.store.get("usuario_logado")
+        if not usuario and hasattr(self.page_ref.session, "get"):
+            usuario = self.page_ref.session.get("usuario_logado")
+
+        if usuario:
+            self.id_u = usuario.get("id_usuario") or usuario.get("id")
+
+        self.recuperar_despesas()
+        self.atualizar_lista(self.despesas, atualizar_tela=atualizar_tela)
+
+    # Recuperar despesas
     def recuperar_despesas(self):
-        self.despesas = Despesa.recuperar_todos(
-            id_usuario=self.id_u
-        ) or []
+        if not self.id_u:
+            self.despesas = []
+            return
 
-    # Atualizar total
-    def atualizar_total(self):
-        soma = sum(float(d["valor"]) for d in self.despesas)
+        con, cur = Conexao.conectar()
+        if not con:
+            self.despesas = []
+            return
 
-        self.total.value = (
-            f"R$ {soma:,.2f}"
-            .replace(",", "X")
-            .replace(".", ",")
-            .replace("X", ".")
-        )
-
-        self.quantidade.value = (
-            f"{len(self.despesas)} despesas cadastradas"
-        )
+        try:
+            cur.execute("""
+                SELECT id_despesa, id_categoria, descricao, valor, data_despesa
+                FROM tb_despesas
+                WHERE id_usuario = %s
+                ORDER BY data_despesa DESC, id_despesa DESC;
+            """, (self.id_u,))
+            self.despesas = cur.fetchall() or []
+            con.close()
+        except Exception as e:
+            print(f"Erro ao buscar despesas: {e}")
+            self.despesas = []
 
     # Criar lista de despesas
-    def atualizar_lista(self, despesas):
+    def atualizar_lista(self, despesas, atualizar_tela=True):
         self.lista.controls.clear()
 
         if len(despesas) > 0:
-
             for d in despesas:
-
                 data = d["data_despesa"]
 
                 if hasattr(data, "strftime"):
@@ -179,6 +150,9 @@ class TodasDespesasView(ft.View):
                     data = str(data)
 
                 valor = float(d["valor"])
+                categoria = d.get("categoria") or (
+                    f"Categoria #{d['id_categoria']}" if d.get("id_categoria") else "Sem categoria"
+                )
 
                 linha = ft.Container(
                     content=ft.Row(
@@ -191,7 +165,7 @@ class TodasDespesasView(ft.View):
                                         weight=ft.FontWeight.BOLD,
                                     ),
                                     ft.Text(
-                                        f'{d["categoria"] or "Sem categoria"} • {data}',
+                                        f"{categoria} • {data}",
                                         color="#647078",
                                         size=12,
                                     ),
@@ -199,7 +173,6 @@ class TodasDespesasView(ft.View):
                                 spacing=5,
                                 expand=True,
                             ),
-
                             ft.Text(
                                 f"R$ {valor:,.2f}".replace(
                                     ",", "X"
@@ -207,12 +180,10 @@ class TodasDespesasView(ft.View):
                                 color=self.COR_ERRO,
                                 weight=ft.FontWeight.BOLD,
                             ),
-
                             ft.IconButton(
                                 icon=ft.Icons.DELETE_OUTLINE,
                                 icon_color=self.COR_ERRO,
-                                on_click=lambda e, id=d["id_despesa"]:
-                                    self.del_despesa(id),
+                                on_click=lambda e, id=d["id_despesa"]: self.del_despesa(id),
                             ),
                         ],
                     ),
@@ -232,28 +203,20 @@ class TodasDespesasView(ft.View):
                 )
             )
 
-    # Pesquisar despesas
-    def filtrar_despesas(self, e):
-        texto = self.pesquisa.value.lower()
-
-        filtradas = [
-            d for d in self.despesas
-            if texto in d["descricao"].lower()
-            or texto in (d["categoria"] or "").lower()
-        ]
-
-        self.atualizar_lista(filtradas)
-        self.update()
+        if atualizar_tela:
+            self.update()
 
     # Excluir despesa
     def del_despesa(self, id_despesa):
-        resultado = Despesa.excluir(
-            id_despesa=id_despesa
-        )
+        con, cur = Conexao.conectar()
+        if not con:
+            return
 
-        if resultado:
+        try:
+            cur.execute("DELETE FROM tb_despesas WHERE id_despesa = %s;", (id_despesa,))
+            con.commit()
+            con.close()
             self.recuperar_despesas()
-            self.atualizar_total()
             self.atualizar_lista(self.despesas)
-            self.pesquisa.value = ""
-            self.update()
+        except Exception as e:
+            print(f"Erro ao excluir despesa: {e}")
