@@ -6,6 +6,7 @@ from src.view.conheca_view import ConhecaOAPP
 from src.view.cadastro_categoria import CadastroCategoriaoView
 from src.view.cadastro_despesa import CadastroDespesaView
 from src.view.lista_despesas import TodasDespesasView
+from src.view.despesas_categoria import DespesasPorCategoriaView
 
 # Paleta de Cores "Bolso Furado" 
 COR_PRIMARIA = "#004D40"   
@@ -38,7 +39,9 @@ def main(page:ft.Page):
             await page.push_route("/todasdespesas")
 
         elif indice_clicado == 4:
-            await page.push_route("")
+            tela_lista_despesas_categoria = DespesasPorCategoriaView (page) 
+            await page.push_route("/despesasporcategoria")
+
 
         elif indice_clicado == 5:
             await page.push_route("/login")
@@ -116,6 +119,11 @@ def main(page:ft.Page):
                             tela_lista_despesas = TodasDespesasView(page)
                             tela_lista_despesas.navigation_bar = navigation_bar
                             page.views.append(tela_lista_despesas)
+
+        elif page.route == "/despesasporcategoria":
+                    tela_lista_despesas_categoria = DespesasPorCategoriaView(page)
+                    tela_lista_despesas_categoria.navigation_bar = navigation_bar
+                    page.views.append(tela_lista_despesas_categoria)
             
         page.update()
 
